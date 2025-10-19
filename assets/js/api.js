@@ -1,5 +1,5 @@
 // Minimal API client for Apps Script backend
-const API_BASE = 'https://script.google.com/macros/s/AKfycbw2Oxf2FCxr6JaEhAkMFwRMpfUThjQlBbDSgQpM7px47C4l1T6Pp46C9AIBma0FaNBB/exec';
+const API_BASE = 'https://script.google.com/macros/s/AKfycbyBgIYnqzpKKOi7NRk4C6KflKvvDsC1gmLtsiBOERIihiD33TeAMthpd4r2Tjv_SvHS/exec';
 
 
 async function apiGet(action, params={}){
@@ -14,7 +14,7 @@ return res.json();
 async function apiPost(action, payload={}){
 const res = await fetch(API_BASE, {
 method:'POST',
-headers:{ 'Content-Type': 'application/json' },
+headers:{ 'Content-Type': 'text/plain;charset=utf-8' },
 body: JSON.stringify({ action, ...payload })
 });
 return res.json();

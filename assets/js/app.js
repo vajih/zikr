@@ -1,4 +1,13 @@
 const $ = (s)=>document.querySelector(s);
+
+// Simple section switcher used across the app. Exposed on window so
+// other modules / inline handlers can call `show('create')` etc.
+window.show = function(id){
+	// hide all top-level sections inside <main>
+	document.querySelectorAll('main > section').forEach(sec=> sec.hidden = true);
+	const el = document.getElementById(id);
+	if(el) el.hidden = false;
+};
 async function refreshCircles(){
 const {ok, circles} = await apiGet('list_circles', { token: Auth.getToken() });
 const ul = $('#listCircles'); ul.innerHTML='';
@@ -55,22 +64,54 @@ window.addEventListener('DOMContentLoaded', async ()=>{
 $('#btnShowCreate').onclick = ()=> show('create');
 $('#btnShowJoin').onclick = ()=> alert('Invite codes coming soon (MVP keeps private circles).');
 $('#btnShowMy').onclick = ()=>{ show('myCircles'); refreshCircles(); };
+$('#btnSignOut').onclick = ()=>{localStorage.removeItem('zikr_token'); show('auth');};
+if (Auth.isAuthed()) {
+  apiGet('me', { token: Auth.getToken() }).then(r=>{
+    if (r && r.ok && r.user && r.user.name) {
+      document.querySelector('h1').textContent = `Zikr Circle — ${r.user.name}`;
+    }
+  });
+  show('myCircles'); refreshCircles();
+}
 
 
 $('#formSignup').addEventListener('submit', async (e)=>{
-e.preventDefault(); const f = new FormData(e.target);
-const r = await apiPost('signup', { email: f.get('email'), name: f.get('name') });
-if(r.ok){ Auth.setToken(r.token); $('#authStatus').textContent = 'Signed in. Token saved.'; show('create'); }
-else { $('#authStatus').textContent = 'Error signing in.'; }
+	e.preventDefault();
+	const f = new FormData(e.target);
+	try{
+		const r = await apiPost('signup', { email: f.get('email'), name: f.get('name') });
+		if(r && r.ok){
+			Auth.setToken(r.token);
+			$('#authStatus').textContent = 'Signed in. Token saved.';
+			// safe call to global show
+			if(typeof window.show === 'function') window.show('create');
+		} else {
+			$('#authStatus').textContent = r && r.error ? `Error: ${r.error}` : 'Error signing in.';
+		}
+	}catch(err){
+		console.error('Signup failed', err);
+		$('#authStatus').textContent = 'Network or server error signing in. See console.';
+	}
 });
 
 
 $('#formCreateCircle').addEventListener('submit', async (e)=>{
-e.preventDefault(); const f = new FormData(e.target);
-const payload = Object.fromEntries(f.entries());
-const r = await apiPost('create_circle', { token: Auth.getToken(), ...payload });
-if(r.ok){ $('#createStatus').textContent = 'Circle created.'; show('myCircles'); refreshCircles(); }
-else { $('#createStatus').textContent = 'Error creating circle.'; }
+	e.preventDefault();
+	const f = new FormData(e.target);
+	const payload = Object.fromEntries(f.entries());
+	try{
+		const r = await apiPost('create_circle', { token: Auth.getToken(), ...payload });
+		if(r && r.ok){
+			$('#createStatus').textContent = 'Circle created.';
+			if(typeof window.show === 'function') window.show('myCircles');
+			refreshCircles();
+		} else {
+			$('#createStatus').textContent = r && r.error ? `Error: ${r.error}` : 'Error creating circle.';
+		}
+	}catch(err){
+		console.error('Create circle failed', err);
+		$('#createStatus').textContent = 'Network or server error creating circle. See console.';
+	}
 });
 
 
