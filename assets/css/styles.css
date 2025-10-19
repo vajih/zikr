@@ -1,0 +1,16 @@
+:root { --bg:#0f172a; --fg:#e2e8f0; --muted:#94a3b8; --brand:#22c55e; }
+*{ box-sizing:border-box; }
+body{ margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background:var(--bg); color:var(--fg); }
+.container{ max-width: 840px; margin: 0 auto; padding: 16px; }
+.header{ display:flex; align-items:center; justify-content:space-between; }
+nav button{ margin-left:8px; }
+h1{ font-size: 1.5rem; }
+h2{ margin-top:24px; }
+input, textarea, select, button{ width:100%; padding:12px; margin:8px 0; border-radius:12px; border:1px solid #1f2937; background:#0b1220; color:var(--fg); }
+button{ background:var(--brand); color:#0a0a0a; font-weight:600; border:none; cursor:pointer; }
+button.tasbih{ font-size:2rem; padding:28px; border-radius:28px; }
+.muted{ color:var(--muted); }
+ul{ list-style:none; padding:0; }
+li{ padding:12px; border:1px solid #1f2937; border-radius:12px; margin-bottom:8px; }
+.actions{ display:flex; gap:8px; }
+#progress{ margin: 16px 0; font-size: 1.125rem; }

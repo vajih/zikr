@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Zikr Circle — Gather hearts. Count blessings.</title>
+<link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+<header class="header container">
+<h1>Zikr Circle</h1>
+<nav>
+<button id="btnShowCreate">Start a Circle</button>
+<button id="btnShowJoin">Join with Code</button>
+<button id="btnShowMy">My Circles</button>
+</nav>
+</header>
+
+
+<main class="container">
+<section id="auth">
+<h2>Sign in</h2>
+<p class="muted">MVP: enter name + email to receive a token (no password).</p>
+<form id="formSignup">
+<input type="text" name="name" placeholder="Your name" required />
+<input type="email" name="email" placeholder="you@example.com" required />
+<button type="submit">Get Started</button>
+</form>
+<p id="authStatus"></p>
+</section>
+
+
+<section id="create" hidden>
+<h2>Create a Circle</h2>
+<form id="formCreateCircle">
+<input name="name" placeholder="Circle name" required />
+<textarea name="recitation_text" placeholder="Recitation (e.g., SubhanAllah…)" required></textarea>
+<input name="target_count" type="number" placeholder="Target count (e.g., 3000)" />
+<select name="privacy">
+<option value="private" selected>Private</option>
+<option value="public">Public (verified hosts)</option>
+</select>
+<textarea name="adab_notes" placeholder="Adab notes (optional)"></textarea>
+<button type="submit">Create</button>
+</form>
+<p id="createStatus"></p>
+</section>
+
+
+<section id="myCircles" hidden>
+<h2>My Circles</h2>
+<ul id="listCircles"></ul>
+</section>
+
+
+<section id="session" hidden>
+<h2 id="sessionTitle">Live Session</h2>
+<div id="progress">You: <span id="youCount">0</span> · Circle: <span id="circleCount">0</span>/<span id="target">0</span></div>
+<button id="btnTasbih" class="tasbih">Tap</button>
+<div class="actions">
+<button id="btnClose">Close Session</button>
+</div>
+</section>
+</main>
+
+
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
