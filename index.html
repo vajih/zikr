@@ -73,6 +73,27 @@
 <button id="btnClose">Close Session</button>
 </div>
 </section>
+
+<!-- Invite share panel -->
+<section id="inviteToast" hidden>
+  <h3>Invite sent to your clipboard</h3>
+  <p class="muted">
+    Paste this link into <strong>WhatsApp</strong>, <strong>text message</strong>, or <strong>email</strong> to invite friends.
+    Anyone with this link can join your circle.
+  </p>
+  <input class="invite-url" readonly />
+  <div class="row">
+    <a class="waBtn">WhatsApp</a>
+    <a class="smsBtn">Text / SMS</a>
+    <a class="emailBtn">Email</a>
+    <button class="copyBtn">Copy</button>
+  </div>
+  <p class="copied muted"></p>
+  <div class="row" style="justify-content:flex-end; margin-top:8px;">
+    <button id="inviteToastClose">Done</button>
+  </div>
+</section>
+
 </main>
 
 

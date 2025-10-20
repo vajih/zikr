@@ -23,16 +23,67 @@ function inviteUrlFromToken(tok) {
   return `${base}?join=${encodeURIComponent(tok)}`;
 }
 
-async function createInvite(circle_id) {
-  const r = await apiPost('create_invite', { token: Auth.getToken(), circle_id });
-  if (r && r.ok) {
-    const url = inviteUrlFromToken(r.invite_token);
-    try { await navigator.clipboard.writeText(url); } catch (_) {}
-    alert(`Invite link ready:\n\n${url}\n\n(We copied it to your clipboard if permitted.)`);
-  } else {
-    alert('Could not create invite: ' + (r && r.error ? r.error : 'unknown'));
-  }
+function inviteUrlFromToken(tok){
+  const base = location.origin + location.pathname.replace(/index\.html$/i, '');
+  return `${base}?join=${encodeURIComponent(tok)}`;
 }
+
+function showInviteToast(url){
+  const toast = document.getElementById('inviteToast');
+  const urlInput = toast.querySelector('.invite-url');
+  const copied = toast.querySelector('.copied');
+
+  // set the URL
+  urlInput.value = url;
+  copied.textContent = 'The unique link is copied to your clipboard. Paste it into WhatsApp, text, or email.';
+
+  // buttons
+  toast.querySelector('.copyBtn').onclick = async ()=>{
+    try { await navigator.clipboard.writeText(url); copied.textContent = 'Copied again ✔'; } catch(_) {}
+  };
+  toast.querySelector('.waBtn').setAttribute('href',
+    'https://wa.me/?text=' + encodeURIComponent('Join my Zikr Circle:\n' + url)
+  );
+  toast.querySelector('.waBtn').setAttribute('target', '_blank');
+  toast.querySelector('.waBtn').setAttribute('rel', 'noopener');
+
+  toast.querySelector('.smsBtn').setAttribute('href',
+    'sms:?&body=' + encodeURIComponent('Join my Zikr Circle: ' + url)
+  );
+  toast.querySelector('.emailBtn').setAttribute('href',
+    'mailto:?subject=' + encodeURIComponent('Join my Zikr Circle') +
+    '&body=' + encodeURIComponent('Assalamu alaikum,\nJoin our dhikr circle here:\n' + url + '\n\n— sent via Zikr Circle')
+  );
+
+  document.getElementById('inviteToastClose').onclick = ()=> toast.hidden = true;
+  toast.hidden = false;
+}
+
+async function createInvite(circle_id){
+  const r = await apiPost('create_invite', { token: Auth.getToken(), circle_id });
+  if(!(r && r.ok)){ alert('Could not create invite: ' + (r && r.error ? r.error : 'unknown')); return; }
+
+  const url = inviteUrlFromToken(r.invite_token);
+
+  // 1) Try native share on phones (best UX)
+  try{
+    if (navigator.share) {
+      await navigator.share({
+        title: 'Join my Zikr Circle',
+        text: 'Tap to join our dhikr circle.',
+        url
+      });
+      return; // shared; nothing else to do
+    }
+  }catch(_){ /* user canceled share; fall through to panel */ }
+
+  // 2) Copy to clipboard
+  try { await navigator.clipboard.writeText(url); } catch(_) {}
+
+  // 3) Show clear instructions + quick-share buttons
+  showInviteToast(url);
+}
+
 
 async function acceptInvite(token) {
   const r = await apiPost('accept_invite', { token: Auth.getToken(), invite_token: token });

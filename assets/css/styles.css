@@ -14,3 +14,20 @@ ul{ list-style:none; padding:0; }
 li{ padding:12px; border:1px solid #1f2937; border-radius:12px; margin-bottom:8px; }
 .actions{ display:flex; gap:8px; }
 #progress{ margin: 16px 0; font-size: 1.125rem; }
+
+#inviteToast{
+  position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%);
+  width: min(560px, calc(100% - 32px));
+  background:#0b1220; border:1px solid #1f2937; border-radius:16px;
+  padding:16px; box-shadow: 0 12px 32px rgba(0,0,0,.4); z-index:9999;
+}
+#inviteToast h3{ margin:0 0 6px; }
+#inviteToast .row{ display:flex; gap:8px; flex-wrap:wrap; }
+#inviteToast a, #inviteToast button{
+  background: var(--brand); color:#0a0a0a; border:none; border-radius:12px;
+  padding:10px 12px; font-weight:600; text-decoration:none; cursor:pointer;
+}
+#inviteToast input.invite-url{
+  width:100%; padding:10px; margin:8px 0; border-radius:10px;
+  border:1px solid #1f2937; background:#0f172a; color:var(--fg);
+}
