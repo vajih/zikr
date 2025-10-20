@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Zikr Circle — Gather hearts. Count blessings.</title>
 <link rel="stylesheet" href="assets/css/styles.css" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+
 </head>
 <body>
 <header class="header container">
@@ -73,6 +75,25 @@
 <button id="btnClose">Close Session</button>
 </div>
 </section>
+
+<section id="complete" hidden>
+  <h2>Alhamdulillah — target reached</h2>
+  <p class="muted">You’ve completed this sitting. You can add a short reflection, start another round, or finish.</p>
+
+  <form id="formReflect">
+    <textarea name="text" placeholder="Optional reflection or duʿa…" rows="3"></textarea>
+    <div class="actions">
+      <button type="submit">Save Reflection</button>
+    </div>
+    <p id="reflectStatus" class="muted"></p>
+  </form>
+
+  <div class="actions" style="margin-top:8px;">
+    <button id="btnAnother">Start another round</button>
+    <button id="btnDone">Done</button>
+  </div>
+</section>
+
 
 <!-- Invite share panel -->
 <section id="inviteToast" hidden>

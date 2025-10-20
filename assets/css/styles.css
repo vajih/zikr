@@ -31,3 +31,24 @@ li{ padding:12px; border:1px solid #1f2937; border-radius:12px; margin-bottom:8p
   width:100%; padding:10px; margin:8px 0; border-radius:10px;
   border:1px solid #1f2937; background:#0f172a; color:var(--fg);
 }
+
+#complete {
+  border:1px solid #1f2937; border-radius:16px; padding:16px; margin-top:16px;
+  background:#0b1220;
+}
+#complete h2 { margin-top:0; }
+
+.progress {
+  height: 8px;
+  background: #1f2937;
+  border-radius: 9999px;
+  overflow: hidden;
+  margin: 6px 0 4px;
+}
+.progress .bar {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: var(--brand);
+}
+.card-meta { color: var(--muted); font-size: 0.9rem; }

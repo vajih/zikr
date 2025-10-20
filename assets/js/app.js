@@ -110,35 +110,56 @@ async function refreshCircles() {
   }
 
   circles.forEach(c => {
+    const percent = Number(c.progress_pct || 0);
+    const completed = Number(c.completed_count || 0);
+    const target = Number(c.current_target || c.target_count || 0);
+    const status = (c.session_status || '').toLowerCase();
+
+    const statusLabel =
+        status === 'open'
+        ? `Active • ${completed} / ${target} (${percent}%)`
+        : (target > 0
+            ? (percent >= 100 ? `Completed • ${target} / ${target} (100%) ✓`
+                                : `Last • ${completed} / ${target} (${percent}%)`)
+            : `No sessions yet`);
+
     const li = document.createElement('li');
     li.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
-        <div>
-          <strong>${c.name}</strong><br>
-          <small>${(c.recitation_text || '').slice(0, 80)}</small><br>
-          Target: ${c.target_count}
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+        <div style="flex:1; min-width:0;">
+            <strong>${c.name}</strong><br>
+            <small>${(c.recitation_text || '').slice(0,80)}</small>
+            <div class="progress" role="progressbar" aria-label="Progress toward target"
+                aria-valuemin="0" aria-valuemax="100" aria-valuenow="${percent}">
+            <span class="bar" style="width:${percent}%;"></span>
+            </div>
+            <div class="card-meta">${statusLabel}</div>
         </div>
-        <div style="display:flex; flex-direction:column; gap:6px; min-width:140px;">
-          <button class="startBtn">Start</button>
-          <button class="inviteBtn">Invite</button>
+        <div style="display:flex; flex-direction:column; gap:6px; min-width:140px; flex-shrink:0;">
+            <button class="startBtn">Start</button>
+            <button class="inviteBtn">Invite</button>
         </div>
-      </div>
+        </div>
     `;
+
     li.querySelector('.startBtn').addEventListener('click', async (ev) => {
-      ev.stopPropagation();
-      const resp = await apiPost('start_session', {
+        ev.stopPropagation();
+        const resp = await apiPost('start_session', {
         token: Auth.getToken(),
         circle_id: c.id,
-        target_count: c.target_count
-      });
-      if (resp.ok) startLive(resp.session_id);
+        target_count: target
+        });
+        if (resp.ok) startLive(resp.session_id);
     });
+
     li.querySelector('.inviteBtn').addEventListener('click', (ev) => {
-      ev.stopPropagation();
-      createInvite(c.id);
+        ev.stopPropagation();
+        createInvite(c.id);
     });
+
     ul.appendChild(li);
-  });
+    });
+
 }
 
 async function startLive(session_id) {
@@ -181,6 +202,14 @@ async function closeSession() {
 
 // ---------- boot ----------
 window.addEventListener('DOMContentLoaded', async () => {
+  // inside DOMContentLoaded:
+const formReflect = document.getElementById('formReflect');
+if (formReflect) formReflect.addEventListener('submit', saveReflection);
+const btnAnother = document.getElementById('btnAnother');
+if (btnAnother) btnAnother.onclick = startAnother;
+const btnDone = document.getElementById('btnDone');
+if (btnDone) btnDone.onclick = doneComplete;
+  
   // nav
   const btnCreate = $('#btnShowCreate');
   const btnJoin = $('#btnShowJoin');
@@ -306,3 +335,88 @@ window.addEventListener('DOMContentLoaded', async () => {
     show('auth');
   }
 });
+
+// if Goal Reached //
+function onGoalReached() {
+  // stop polling and disable the tap button
+  if (POLL_ID) { clearInterval(POLL_ID); POLL_ID = null; }
+  const tap = document.getElementById('btnTasbih');
+  if (tap) tap.disabled = true;
+
+  // show completion panel
+  show('session'); // ensure we’re on session screen
+  document.getElementById('complete').hidden = false;
+}
+
+// keep a little live context
+let LIVE = { session_id:null, circle_id:null, target:0, circleName:'' };
+
+async function startLive(session_id) {
+  CUR_SESSION = session_id; YOU = 0; show('session');
+  document.getElementById('complete').hidden = true;
+  const info = await apiGet('get_session', { token: Auth.getToken(), session_id });
+  if (info && info.ok) {
+    LIVE = {
+      session_id,
+      circle_id: info.session.circle_id,
+      target: Number(info.session.target_count) || 0,
+      circleName: info.circle.name
+    };
+    $('#sessionTitle').textContent = LIVE.circleName;
+    $('#target').textContent = LIVE.target;
+    $('#circleCount').textContent = info.session.completed_count;
+    $('#youCount').textContent = YOU;
+
+    // if session already completed (e.g., re-open), show completion
+    if (String(info.session.status) === 'completed' || info.session.completed_count >= LIVE.target) {
+      onGoalReached();
+    }
+  }
+
+  if (POLL_ID) clearInterval(POLL_ID);
+  POLL_ID = setInterval(async ()=>{
+    if (!CUR_SESSION) return;
+    const s = await apiGet('get_session', { token: Auth.getToken(), session_id: CUR_SESSION });
+    if (s && s.ok) {
+      $('#circleCount').textContent = s.session.completed_count;
+      if (String(s.session.status) === 'completed' || s.session.completed_count >= LIVE.target) {
+        onGoalReached();
+      }
+    }
+  }, 1500);
+}
+
+async function increment() {
+  if (!CUR_SESSION) return;
+  YOU += 1; $('#youCount').textContent = YOU;
+  const r = await apiPost('increment', { token: Auth.getToken(), session_id: CUR_SESSION, delta: 1 });
+  if (r && r.ok) {
+    $('#circleCount').textContent = r.completed_count;
+    if (r.goal_reached) onGoalReached();
+  } else if (r && r.error === 'session_closed') {
+    onGoalReached();
+  }
+}
+
+// reflection save
+async function saveReflection(e) {
+  e.preventDefault();
+  const txt = new FormData(e.target).get('text') || '';
+  if (!txt.trim()) { $('#reflectStatus').textContent = 'Saved (empty)'; return; }
+  const r = await apiPost('reflect', { token: Auth.getToken(), session_id: LIVE.session_id, text: txt, visibility: 'circle' });
+  $('#reflectStatus').textContent = r && r.ok ? 'Reflection saved.' : 'Could not save reflection.';
+}
+
+// start another round with same circle/target
+async function startAnother() {
+  const resp = await apiPost('start_session', { token: Auth.getToken(), circle_id: LIVE.circle_id, target_count: LIVE.target });
+  if (resp && resp.ok) startLive(resp.session_id);
+}
+
+// done → back to My Circles
+function doneComplete() {
+  CUR_SESSION = null;
+  show('myCircles');
+  refreshCircles();
+}
+

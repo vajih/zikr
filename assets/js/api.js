@@ -1,5 +1,5 @@
 // Minimal API client for Apps Script backend
-const API_BASE = 'https://script.google.com/macros/s/AKfycbwf53XJsnK2D1EpxuU3qiWiEugLDUxCUGAJYnkWmGuFgnq6WiTeS2yHVgRwuLw_yQr7/exec';
+const API_BASE = 'https://script.google.com/macros/s/AKfycbwssDxHc9dO_y3mjIQ5wtPY3rta3elC6fhT2JbrdtIOvKx7NNdRFChK4G6QRQefouEV/exec';
 
 
 async function apiGet(action, params={}){
