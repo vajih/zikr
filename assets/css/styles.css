@@ -1,54 +1,184 @@
-:root { --bg:#0f172a; --fg:#e2e8f0; --muted:#94a3b8; --brand:#22c55e; }
+:root{
+  --bg:#0f172a;
+  --surface:#0b1220;
+  --card:#0b1220;
+  --fg:#e2e8f0;
+  --muted:#94a3b8;
+  --border:#1f2937;
+  --brand:#22c55e;
+  --brand-ink:#062b16;
+  --shadow:0 12px 32px rgba(0,0,0,.4);
+}
+
+/* Base */
 *{ box-sizing:border-box; }
-body{ margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background:var(--bg); color:var(--fg); }
+body{
+  margin:0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  background:var(--bg);
+  color:var(--fg);
+}
 .container{ max-width: 840px; margin: 0 auto; padding: 16px; }
-.header{ display:flex; align-items:center; justify-content:space-between; }
+.header{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
 nav button{ margin-left:8px; }
 h1{ font-size: 1.5rem; }
 h2{ margin-top:24px; }
-input, textarea, select, button{ width:100%; padding:12px; margin:8px 0; border-radius:12px; border:1px solid #1f2937; background:#0b1220; color:var(--fg); }
-button{ background:var(--brand); color:#0a0a0a; font-weight:600; border:none; cursor:pointer; }
-button.tasbih{ font-size:2rem; padding:28px; border-radius:28px; }
-.muted{ color:var(--muted); }
-ul{ list-style:none; padding:0; }
-li{ padding:12px; border:1px solid #1f2937; border-radius:12px; margin-bottom:8px; }
-.actions{ display:flex; gap:8px; }
-#progress{ margin: 16px 0; font-size: 1.125rem; }
+h3{ margin-top:16px; }
 
-#inviteToast{
-  position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%);
-  width: min(560px, calc(100% - 32px));
-  background:#0b1220; border:1px solid #1f2937; border-radius:16px;
-  padding:16px; box-shadow: 0 12px 32px rgba(0,0,0,.4); z-index:9999;
+/* Controls */
+input, textarea, select, button{
+  width:100%;
+  padding:12px;
+  margin:8px 0;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:var(--surface);
+  color:var(--fg);
 }
-#inviteToast h3{ margin:0 0 6px; }
-#inviteToast .row{ display:flex; gap:8px; flex-wrap:wrap; }
-#inviteToast a, #inviteToast button{
+input::placeholder, textarea::placeholder{ color:#7b8794; }
+button{
+  background:var(--brand);
+  color:#0a0a0a;
+  font-weight:600;
+  border:none;
+  cursor:pointer;
+  transition: transform .02s ease, opacity .15s ease, filter .15s ease;
+}
+button:hover{ filter: brightness(1.05); }
+button:active{ transform: translateY(1px); }
+button:disabled{ opacity:.6; cursor:not-allowed; }
+button.secondary{
+  background:transparent;
+  color:var(--fg);
+  border:1px solid var(--border);
+}
+button.tasbih{ font-size:2rem; padding:28px; border-radius:28px; }
+
+:focus-visible{
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* Lists / Cards */
+ul{ list-style:none; padding:0; }
+li{
+  padding:12px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  margin-bottom:8px;
+  background:var(--card);
+}
+.card-meta { color: var(--muted); font-size: 0.9rem; }
+
+/* Session */
+#progress{ margin:16px 0; font-size:1.125rem; }
+.actions{ display:flex; gap:8px; }
+
+/* Progress bar */
+.progress{
+  height:8px;
+  background:#1f2937;
+  border-radius:9999px;
+  overflow:hidden;
+  margin:6px 0 4px;
+}
+.progress .bar{
+  display:block;
+  height:100%;
+  width:0%;
+  background:var(--brand);
+  transition: width .25s ease;
+}
+
+/* Completion panel */
+#complete{
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:16px;
+  margin-top:16px;
+  background:var(--card);
+  box-shadow: var(--shadow);
+}
+#complete h3{ margin-top:0; }
+
+/* ===== Modal (high-contrast, calm) ===== */
+.modal{
+  position:fixed; inset:0; padding:24px;
+  background: rgba(2,6,12,.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display:none; align-items:center; justify-content:center;
+  z-index:99999;
+}
+.modal[hidden]{ display:none !important; }
+.modal:not([hidden]){ display:flex; }
+.modal-card{
+  width:min(560px,100%);
+  background: rgba(13,23,33,.98);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;
+  padding:18px 20px 20px;
+  box-shadow:0 18px 60px rgba(0,0,0,.55);
+  color:#e9f4f1;
+}
+.modal-card h3{ margin:0 0 8px 0; font-size:20px; line-height:1.2; }
+.modal-card p{ margin:8px 0 0; color:#a9c2bd; }
+.modal .row{ display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
+.modal .row button{ flex:1; }
+.modal .secondary{ background:transparent; color:inherit; border:1px solid rgba(255,255,255,.15); }
+@media (max-width:380px){ .modal .row{ flex-direction:column; } }
+
+/* Manual add on session */
+.manual-add{ margin-top:12px; }
+.manual-add label{ display:block; font-size:12px; color:var(--muted); margin-bottom:6px; }
+.manual-add .row{ display:flex; gap:8px; align-items:center; }
+.manual-add input[type="number"]{
+  flex:1;
+  padding:10px 12px;
+  background: var(--surface);
+  border:1px solid var(--border);
+  border-radius:10px;
+  color: var(--fg);
+}
+.manual-add button{
+  padding:10px 14px;
+  border-radius:10px;
+}
+
+/* ===== Invite Toast (works via #inviteToast or .toast) ===== */
+#inviteToast[hidden], .toast[hidden]{ display:none !important; }
+
+#inviteToast, .toast{
+  position:fixed; left:50%; bottom:16px; transform:translateX(-50%);
+  width:min(560px, calc(100% - 32px));
+  z-index:9999;
+}
+#inviteToast .toast-card, .toast .toast-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:16px;
+  box-shadow: var(--shadow);
+}
+#inviteToast .toast-head, .toast .toast-head{
+  display:flex; align-items:center; justify-content:space-between; gap:8px;
+  margin-bottom:8px;
+}
+#inviteToast .toast-head button, .toast .toast-head button{
+  width:auto; padding:6px 10px; border-radius:10px; background:transparent; color:var(--fg);
+  border:1px solid var(--border); line-height:1;
+}
+#inviteToast input.invite-url, .toast input.invite-url{
+  width:100%; padding:10px; margin:8px 0; border-radius:10px;
+  border:1px solid var(--border); background:#0f172a; color:var(--fg);
+}
+#inviteToast .row, .toast .row{ display:flex; gap:8px; flex-wrap:wrap; }
+#inviteToast a, #inviteToast button,
+.toast a, .toast button{
   background: var(--brand); color:#0a0a0a; border:none; border-radius:12px;
   padding:10px 12px; font-weight:600; text-decoration:none; cursor:pointer;
 }
-#inviteToast input.invite-url{
-  width:100%; padding:10px; margin:8px 0; border-radius:10px;
-  border:1px solid #1f2937; background:#0f172a; color:var(--fg);
-}
+#inviteToast .copied, .toast .copied{ color:var(--muted); font-size:.9rem; }
 
-#complete {
-  border:1px solid #1f2937; border-radius:16px; padding:16px; margin-top:16px;
-  background:#0b1220;
-}
-#complete h2 { margin-top:0; }
-
-.progress {
-  height: 8px;
-  background: #1f2937;
-  border-radius: 9999px;
-  overflow: hidden;
-  margin: 6px 0 4px;
-}
-.progress .bar {
-  display: block;
-  height: 100%;
-  width: 0%;
-  background: var(--brand);
-}
-.card-meta { color: var(--muted); font-size: 0.9rem; }
+/* Small utility */
+.row{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }

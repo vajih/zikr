@@ -1,129 +1,153 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Zikr Circle — Gather hearts. Count blessings.</title>
-<link rel="stylesheet" href="assets/css/styles.css" />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
-<link rel="icon" href="/assets/img/favicon.ico" sizes="any">
-<link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg">
-<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
-<link rel="shortcut icon" href="/assets/img/favicon.ico">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Zikr Circle — Gather hearts. Count blessings.</title>
 
+  <!-- Favicon (place favicon.ico in site root or /assets) -->
+  <link rel="icon" href="favicon.ico" />
+
+  <link rel="stylesheet" href="assets/css/styles.css" />
 </head>
 <body>
-<header class="header container">
-<h1>Zikr Circle</h1>
-<nav>
-<button id="btnShowCreate">Start a Circle</button>
-<button id="btnShowJoin">Join with Code</button>
-<button id="btnShowMy">My Circles</button>
-<button id="btnSignOut" title="Sign out">Sign out</button>
+  <!-- ===== Header / Nav ===== -->
+  <header class="header container">
+    <h1>Zikr Circle</h1>
+    <nav>
+      <button id="btnShowCreate">Start a Circle</button>
+      <button id="btnShowJoin">Join with Code</button>
+      <button id="btnShowMy">My Circles</button>
+      <button id="btnSignOut" class="secondary">Sign out</button>
+    </nav>
+  </header>
 
-</nav>
-</header>
+  <main class="container">
+    <!-- ===== Auth ===== -->
+    <section id="auth">
+      <h2>Sign in</h2>
+      <p class="muted">MVP: enter name + email to receive a token (no password).</p>
+      <form id="formSignup">
+        <input type="text" name="name" placeholder="Your name" autocomplete="name" required />
+        <input type="email" name="email" placeholder="you@example.com" autocomplete="email" required />
+        <button type="submit">Get Started</button>
+      </form>
+      <p id="authStatus" class="muted"></p>
+    </section>
 
+    <!-- ===== Join by Invite Token ===== -->
+    <section id="join" hidden>
+      <h2>Join a Circle</h2>
+      <p class="muted">Paste the invite code (or open the invite link you received).</p>
+      <form id="formJoin" autocomplete="off">
+        <input type="text" name="invite_token" placeholder="Invite token…" />
+        <button type="submit">Join</button>
+      </form>
+      <p id="joinStatus" class="muted"></p>
+    </section>
 
-<main class="container">
-<section id="auth">
-<h2>Sign in</h2>
-<p class="muted">MVP: enter name + email to receive a token (no password).</p>
-<form id="formSignup">
-<input type="text" name="name" placeholder="Your name" required />
-<input type="email" name="email" placeholder="you@example.com" required />
-<button type="submit">Get Started</button>
-</form>
-<p id="authStatus"></p>
-</section>
+    <!-- ===== Create Circle ===== -->
+    <section id="create" hidden>
+      <h2>Create a Circle</h2>
+      <form id="formCreateCircle">
+        <input name="name" placeholder="Circle name" required />
+        <textarea name="recitation_text" placeholder="Recitation (e.g., SubhanAllah…)" required></textarea>
+        <input name="target_count" type="number" min="0" step="1" placeholder="Target count (e.g., 3000)" />
+        <select name="privacy">
+          <option value="private" selected>Private</option>
+          <option value="public">Public (verified hosts)</option>
+        </select>
+        <textarea name="adab_notes" placeholder="Adab notes (optional)"></textarea>
+        <button type="submit">Create</button>
+      </form>
+      <p id="createStatus" class="muted"></p>
+    </section>
 
+    <!-- ===== My Circles ===== -->
+    <section id="myCircles" hidden>
+      <h2>My Circles</h2>
+      <ul id="listCircles"></ul>
+    </section>
 
-<section id="create" hidden>
-<h2>Create a Circle</h2>
-<form id="formCreateCircle">
-<input name="name" placeholder="Circle name" required />
-<textarea name="recitation_text" placeholder="Recitation (e.g., SubhanAllah…)" required></textarea>
-<input name="target_count" type="number" placeholder="Target count (e.g., 3000)" />
-<select name="privacy">
-<option value="private" selected>Private</option>
-<option value="public">Public (verified hosts)</option>
-</select>
-<textarea name="adab_notes" placeholder="Adab notes (optional)"></textarea>
-<button type="submit">Create</button>
-</form>
-<p id="createStatus"></p>
-</section>
+    <!-- ===== Live Session ===== -->
+    <section id="session" hidden>
+      <h2 id="sessionTitle">Live Session</h2>
+      <div id="progress">
+        You: <span id="youCount">0</span> · Circle: <span id="circleCount">0</span>/<span id="target">0</span>
+      </div>
 
-<section id="join" hidden>
-<h2>Join a Circle by Code</h2>
-<form id="formJoin">
-<input name="invite_token" placeholder="Paste invite code" required />
-<button type="submit">Join</button>
-</form>
-<p class="muted">If you opened a link with ?join=CODE this will auto-fill.</p>
-<p id="joinStatus"></p>
-</section>
+      <button id="btnTasbih" class="tasbih">Tap</button>
 
+      <!-- Manual Add (offline recitations) -->
+      <div class="manual-add">
+        <label for="manualDelta">Add manually</label>
+        <div class="row">
+          <input id="manualDelta" type="number" min="1" step="1" placeholder="e.g., 33" inputmode="numeric" />
+          <button id="btnAddManual" type="button">Add</button>
+        </div>
+        <small class="muted">Use this to record recitations done offline.</small>
+        <div id="manualStatus" class="muted"></div>
+      </div>
 
-<section id="myCircles" hidden>
-<h2>My Circles</h2>
-<ul id="listCircles"></ul>
-</section>
+      <div class="actions">
+        <button id="btnClose" class="secondary">Close Session</button>
+      </div>
 
+      <!-- Completion panel (shown when target reached) -->
+      <div id="complete" hidden>
+        <h3>Allahu Akbar! Target reached 🎉</h3>
+        <p class="muted">You can save a reflection, start another round, or head back to your circles.</p>
 
-<section id="session" hidden>
-<h2 id="sessionTitle">Live Session</h2>
-<div id="progress">You: <span id="youCount">0</span> · Circle: <span id="circleCount">0</span>/<span id="target">0</span></div>
-<button id="btnTasbih" class="tasbih">Tap</button>
-<div class="actions">
-<button id="btnClose">Close Session</button>
-</div>
-</section>
+        <form id="formReflect">
+          <textarea name="text" rows="3" placeholder="Optional reflection…"></textarea>
+          <button type="submit">Save Reflection</button>
+          <span id="reflectStatus" class="muted"></span>
+        </form>
 
-<section id="complete" hidden>
-  <h2>Alhamdulillah — target reached</h2>
-  <p class="muted">You’ve completed this sitting. You can add a short reflection, start another round, or finish.</p>
+        <div class="row" style="margin-top:10px;">
+          <button id="btnAnother">Start another round</button>
+          <button id="btnDone" class="secondary">Done</button>
+        </div>
+      </div>
+    </section>
+  </main>
 
-  <form id="formReflect">
-    <textarea name="text" placeholder="Optional reflection or duʿa…" rows="3"></textarea>
-    <div class="actions">
-      <button type="submit">Save Reflection</button>
+  <!-- ===== Duplicate Email Modal ===== -->
+  <div id="dupeModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="dupeTitle" hidden>
+    <div class="modal-card">
+      <h3 id="dupeTitle">Account found</h3>
+      <p>We found an account for <b id="dupeEmail"></b>. If this is you, continue to sign in. Otherwise, try a different email.</p>
+      <div class="row" style="margin-top:12px;">
+        <button id="btnDupeContinue">Continue</button>
+        <button id="btnDupeChange" class="secondary">Use different email</button>
+      </div>
+      <p class="muted" style="margin-top:8px">
+        No password in this MVP — it’s password-less. Continuing will sign you in safely on this device.
+      </p>
     </div>
-    <p id="reflectStatus" class="muted"></p>
-  </form>
-
-  <div class="actions" style="margin-top:8px;">
-    <button id="btnAnother">Start another round</button>
-    <button id="btnDone">Done</button>
   </div>
-</section>
 
-
-<!-- Invite share panel -->
-<section id="inviteToast" hidden>
-  <h3>Invite sent to your clipboard</h3>
-  <p class="muted">
-    Paste this link into <strong>WhatsApp</strong>, <strong>text message</strong>, or <strong>email</strong> to invite friends.
-    Anyone with this link can join your circle.
-  </p>
-  <input class="invite-url" readonly />
-  <div class="row">
-    <a class="waBtn">WhatsApp</a>
-    <a class="smsBtn">Text / SMS</a>
-    <a class="emailBtn">Email</a>
-    <button class="copyBtn">Copy</button>
+  <!-- ===== Optional Invite Sharing Toast (UI sugar; app falls back to alert) ===== -->
+  <div id="inviteToast" class="toast" hidden>
+    <div class="toast-card">
+      <div class="toast-head">
+        <strong>Invite link ready</strong>
+        <button id="inviteToastClose" aria-label="Close">×</button>
+      </div>
+      <input class="invite-url" readonly />
+      <div class="copied muted">Copied to clipboard. Share it however you like.</div>
+      <div class="row" style="margin-top:10px;">
+        <button class="copyBtn">Copy</button>
+        <a class="waBtn button" href="#" target="_blank" rel="noopener">WhatsApp</a>
+        <a class="smsBtn button" href="#">SMS</a>
+        <a class="emailBtn button" href="#">Email</a>
+      </div>
+    </div>
   </div>
-  <p class="copied muted"></p>
-  <div class="row" style="justify-content:flex-end; margin-top:8px;">
-    <button id="inviteToastClose">Done</button>
-  </div>
-</section>
 
-</main>
-
-
-<script src="assets/js/auth.js"></script>
-<script src="assets/js/api.js"></script>
-<script src="assets/js/app.js"></script>
+  <!-- ===== Scripts ===== -->
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/app.js"></script>
 </body>
 </html>
