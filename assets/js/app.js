@@ -573,7 +573,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 });
 
 // assets/js/app.js
-import { supabase } from '/assets/js/supabaseClient.js';
+import { supabase } from './supabaseClient.js';
 
 async function testSupabase() {
   // Simple call—if your 'circles' table exists, this will return rows.

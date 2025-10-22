@@ -18,7 +18,7 @@
       <button id="btnShowCreate">Start a Circle</button>
       <button id="btnShowJoin">Join with Code</button>
       <button id="btnShowMy">My Circles</button>
-      <button id="btnSignOut" class="secondary">Sign out</button>
+      <button id="btn-signout" class="secondary">Sign out</button>
     </nav>
   </header>
 
@@ -27,11 +27,19 @@
     <section id="auth">
       <h2>Sign in</h2>
       <p class="muted">MVP: enter name + email to receive a token (no password).</p>
-      <form id="formSignup">
-        <input type="text" name="name" placeholder="Your name" autocomplete="name" required />
-        <input type="email" name="email" placeholder="you@example.com" autocomplete="email" required />
+      <form id="signin-form">
+        <input id="signin-name"  placeholder="Your name" />
+        <input id="signin-email" placeholder="you@example.com" />
         <button type="submit">Get Started</button>
       </form>
+
+      <input id="new-circle-name" placeholder="Circle name" />
+      <input id="new-circle-dhikr" placeholder="Recitation" />
+      <input id="new-circle-target" type="number" placeholder="Target count" />
+      <button id="btn-create-circle">Create Circle</button>
+
+      <ul id="circles-list"></ul> <!-- for the next step -->
+
       <p id="authStatus" class="muted"></p>
     </section>
 
@@ -51,7 +59,7 @@
       <h2>Create a Circle</h2>
       <form id="formCreateCircle">
         <input name="name" placeholder="Circle name" required />
-        <textarea name="recitation_text" placeholder="Recitation (e.g., SubhanAllah…)" required></textarea>
+        <textarea name="recitation" placeholder="Recitation (e.g., SubhanAllah…)" required></textarea>
         <input name="target_count" type="number" min="0" step="1" placeholder="Target count (e.g., 3000)" />
         <select name="privacy">
           <option value="private" selected>Private</option>
@@ -145,12 +153,13 @@
     </div>
   </div>
 
-  <!-- ===== Scripts ===== -->
-<script src="assets/js/auth.js"></script>
-<script src="assets/js/api.js"></script>
+  <!-- ===== Scripts (order matters) ===== -->
 <script src="assets/js/config.local.js"></script>
+<script type="module" src="assets/js/auth-compat.js"></script>
+<script type="module" src="assets/js/api-compat.js"></script>
+<script type="module" src="assets/js/auth.js"></script>
 <script type="module" src="assets/js/app.js"></script>
-<script type="module" src="assets/js/dev-test.js"></script> <!-- temporary -->
+<script type="module" src="assets/js/api.js"></script>
 
 
 
