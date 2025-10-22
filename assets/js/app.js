@@ -571,3 +571,19 @@ window.addEventListener('DOMContentLoaded', async () => {
     show('auth');
   }
 });
+
+// assets/js/app.js
+import { supabase } from '/assets/js/supabaseClient.js';
+
+async function testSupabase() {
+  // Simple call—if your 'circles' table exists, this will return rows.
+  // If it doesn't exist yet, you'll still see a successful network call but with an error explaining the table is missing.
+  const { data, error } = await supabase
+    .from('circles')
+    .select('*')
+    .limit(1);
+
+  console.log('Supabase connection test →', { data, error });
+}
+
+document.addEventListener('DOMContentLoaded', testSupabase);
